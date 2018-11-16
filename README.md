@@ -1,2 +1,2 @@
-# kld1d
-KLD 1D C++ version
+# KLD C++ Version
+KLD C++ version
