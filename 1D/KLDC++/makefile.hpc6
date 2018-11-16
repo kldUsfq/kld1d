@@ -1,0 +1,37 @@
+INCLUDES := atomsParam.h  sphere_lebedev_rule.h rhoMod.h sharedkld.h
+SRCLIBS :=  atomsParam.cpp  main.cpp rhoMod.cpp sharedkld.cpp sphere_lebedev_rule.cpp
+OBJECTS  := $(patsubst %.cpp, %.o, $(SRCLIBS))
+#FOR LINUX
+LIBS := -I/opt/intel/mkl/include/intel64 -I/opt/intel//mkl/lib/intel64
+MKL := /opt/intel/mkl/lib/intel64
+MKL_INCLUDE := /opt/intel/mkl/include/intel64
+CXX := icpc
+# END LINUX
+#FOR MAC
+#LIBS := -framework Accelerate
+#CXX := g++
+# END MAC
+
+CXXFLAGS := -std=c++14
+CFLAGS := -g
+APPName := kld1d
+
+all: clean main
+
+main: atomsParam.o main.o rhoMod.o sharedkld.o sphere_lebedev_rule.o
+        $(CXX) -o $(APPName) $(OBJECTS) -L$(MKL) -L$(MKL_INCLUDE)  -lmkl_rt  -lpthread -lm -ldl
+        $(chmod +x $(APPName))
+atomsParam.o:
+        $(CXX) -c  $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "atomsParam.o.d" -o atomsParam.o atomsParam.cpp
+main.o:
+        $(CXX) -c   $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "main.o.d" -o main.o main.cpp
+rhoMod.o:
+        $(CXX) -c   $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "rhoMod.o.d" -o rhoMod.o rhoMod.cpp
+sharedkld.o:
+        $(CXX) -c -lmkl_lapack  $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "sharedkld.o.d" -o sharedkld.o sharedkld.cpp
+sphere_lebedev_rule.o:
+        $(CXX) -c   $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "sphere_lebedev_rule.o.d" -o sphere_lebedev_rule.o sphere_lebedev_rule.cpp
+clean:
+        rm -rf *.o
+        rm -rf *.o.d
+        rm -rf $(APPName)

@@ -1,0 +1,123 @@
+Using the following arguments:
+Path of APP:./kld1d
+KLD version:1D
+Parameters file:../KLD/KLD_CALCULATIONS/WATER_DIMER_TEST/ALL_1D_TEST/wfn.dat
+Processing 1D version...
+Initializing calculations for KLD_1D...
+Time at start is: Thu Oct 18 23:35:17 2018
+
+Reading file: ../KLD/KLD_CALCULATIONS/WATER_DIMER_TEST/ALL_1D_TEST/wfn.dat OK
+Reading data file:  ../KLD/KLD_CALCULATIONS/WATER_DIMER_TEST/ALL_1D_TEST/water_dimer_rhf.wfn
+Method: GAUSSIAN Matrix: 10x72 and 6
+  194 lines.  OK
+CHIˆ2 = 0
+Reading data file:  ../KLD/KLD_CALCULATIONS/WATER_DIMER_TEST/ALL_1D_TEST/cube.dat...
+Read cube.dat OK ... 5 lines
+Results will be saved in: ../KLD/KLD_CALCULATIONS/WATER_DIMER_TEST/ALL_1D_TEST/result.out file
+order lebedev: 86
+precision lebedev: 15
+Number of points: 11180
+Processed:[112] of [11180]:1.00179 %
+Processed:[224] of [11180]:2.00358 %
+Processed:[336] of [11180]:3.00537 %
+Processed:[448] of [11180]:4.00716 %
+Processed:[559] of [11180]:5 %
+Processed:[671] of [11180]:6.00179 %
+Processed:[783] of [11180]:7.00358 %
+Processed:[895] of [11180]:8.00537 %
+Processed:[1007] of [11180]:9.00716 %
+Processed:[1118] of [11180]:10 %
+Processed:[1230] of [11180]:11.0018 %
+Processed:[1342] of [11180]:12.0036 %
+Processed:[1454] of [11180]:13.0054 %
+Processed:[1566] of [11180]:14.0072 %
+Processed:[1677] of [11180]:15 %
+Processed:[1789] of [11180]:16.0018 %
+Processed:[1901] of [11180]:17.0036 %
+Processed:[2013] of [11180]:18.0054 %
+Processed:[2125] of [11180]:19.0072 %
+Processed:[2236] of [11180]:20 %
+Processed:[2348] of [11180]:21.0018 %
+Processed:[2460] of [11180]:22.0036 %
+Processed:[2572] of [11180]:23.0054 %
+Processed:[2684] of [11180]:24.0072 %
+Processed:[2795] of [11180]:25 %
+Processed:[2907] of [11180]:26.0018 %
+Processed:[3019] of [11180]:27.0036 %
+Processed:[3131] of [11180]:28.0054 %
+Processed:[3243] of [11180]:29.0072 %
+Processed:[3354] of [11180]:30 %
+Processed:[3466] of [11180]:31.0018 %
+Processed:[3578] of [11180]:32.0036 %
+Processed:[3690] of [11180]:33.0054 %
+Processed:[3802] of [11180]:34.0072 %
+Processed:[3913] of [11180]:35 %
+Processed:[4025] of [11180]:36.0018 %
+Processed:[4137] of [11180]:37.0036 %
+Processed:[4249] of [11180]:38.0054 %
+Processed:[4361] of [11180]:39.0072 %
+Processed:[4472] of [11180]:40 %
+Processed:[4584] of [11180]:41.0018 %
+Processed:[4696] of [11180]:42.0036 %
+Processed:[4808] of [11180]:43.0054 %
+Processed:[4920] of [11180]:44.0072 %
+Processed:[5031] of [11180]:45 %
+Processed:[5143] of [11180]:46.0018 %
+Processed:[5255] of [11180]:47.0036 %
+Processed:[5367] of [11180]:48.0054 %
+Processed:[5479] of [11180]:49.0072 %
+Processed:[5590] of [11180]:50 %
+Processed:[5702] of [11180]:51.0018 %
+Processed:[5814] of [11180]:52.0036 %
+Processed:[5926] of [11180]:53.0054 %
+Processed:[6038] of [11180]:54.0072 %
+Processed:[6149] of [11180]:55 %
+Processed:[6261] of [11180]:56.0018 %
+Processed:[6373] of [11180]:57.0036 %
+Processed:[6485] of [11180]:58.0054 %
+Processed:[6597] of [11180]:59.0072 %
+Processed:[6708] of [11180]:60 %
+Processed:[6820] of [11180]:61.0018 %
+Processed:[6932] of [11180]:62.0036 %
+Processed:[7044] of [11180]:63.0054 %
+Processed:[7156] of [11180]:64.0072 %
+Processed:[7267] of [11180]:65 %
+Processed:[7379] of [11180]:66.0018 %
+Processed:[7491] of [11180]:67.0036 %
+Processed:[7603] of [11180]:68.0054 %
+Processed:[7715] of [11180]:69.0072 %
+Processed:[7826] of [11180]:70 %
+Processed:[7938] of [11180]:71.0018 %
+Processed:[8050] of [11180]:72.0036 %
+Processed:[8162] of [11180]:73.0054 %
+Processed:[8274] of [11180]:74.0072 %
+Processed:[8385] of [11180]:75 %
+Processed:[8497] of [11180]:76.0018 %
+Processed:[8609] of [11180]:77.0036 %
+Processed:[8721] of [11180]:78.0054 %
+Processed:[8833] of [11180]:79.0072 %
+Processed:[8944] of [11180]:80 %
+Processed:[9056] of [11180]:81.0018 %
+Processed:[9168] of [11180]:82.0036 %
+Processed:[9280] of [11180]:83.0054 %
+Processed:[9392] of [11180]:84.0072 %
+Processed:[9503] of [11180]:85 %
+Processed:[9615] of [11180]:86.0018 %
+Processed:[9727] of [11180]:87.0036 %
+Processed:[9839] of [11180]:88.0054 %
+Processed:[9951] of [11180]:89.0072 %
+Processed:[10062] of [11180]:90 %
+Processed:[10174] of [11180]:91.0018 %
+Processed:[10286] of [11180]:92.0036 %
+Processed:[10398] of [11180]:93.0054 %
+Processed:[10510] of [11180]:94.0072 %
+Processed:[10621] of [11180]:95 %
+Processed:[10733] of [11180]:96.0018 %
+Processed:[10845] of [11180]:97.0036 %
+Processed:[10957] of [11180]:98.0054 %
+Processed:[11069] of [11180]:99.0072 %
+Time at end is: Fri Oct 19 00:48:35 2018
+
+Elapsed time is: 4398
+Runtime: 4480 seconds.
+End processing 1D.
