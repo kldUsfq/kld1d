@@ -1,42 +1,128 @@
-INCLUDES := atomsParam.h  sphere_lebedev_rule.h rhoMod.h sharedkld.h
-SRCLIBS :=  atomsParam.cpp  main.cpp rhoMod.cpp sharedkld.cpp sphere_lebedev_rule.cpp 
-OBJECTS  := $(patsubst %.cpp, %.o, $(SRCLIBS))
+#
+#  There exist several targets which are by default empty and which can be 
+#  used for execution of your targets. These targets are usually executed 
+#  before and after some main targets. They are: 
+#
+#     .build-pre:              called before 'build' target
+#     .build-post:             called after 'build' target
+#     .clean-pre:              called before 'clean' target
+#     .clean-post:             called after 'clean' target
+#     .clobber-pre:            called before 'clobber' target
+#     .clobber-post:           called after 'clobber' target
+#     .all-pre:                called before 'all' target
+#     .all-post:               called after 'all' target
+#     .help-pre:               called before 'help' target
+#     .help-post:              called after 'help' target
+#
+#  Targets beginning with '.' are not intended to be called on their own.
+#
+#  Main targets can be executed directly, and they are:
+#  
+#     build                    build a specific configuration
+#     clean                    remove built files from a configuration
+#     clobber                  remove all built files
+#     all                      build all configurations
+#     help                     print help mesage
+#  
+#  Targets .build-impl, .clean-impl, .clobber-impl, .all-impl, and
+#  .help-impl are implemented in nbproject/makefile-impl.mk.
+#
+#  Available make variables:
+#
+#     CND_BASEDIR                base directory for relative paths
+#     CND_DISTDIR                default top distribution directory (build artifacts)
+#     CND_BUILDDIR               default top build directory (object files, ...)
+#     CONF                       name of current configuration
+#     CND_PLATFORM_${CONF}       platform name (current configuration)
+#     CND_ARTIFACT_DIR_${CONF}   directory of build artifact (current configuration)
+#     CND_ARTIFACT_NAME_${CONF}  name of build artifact (current configuration)
+#     CND_ARTIFACT_PATH_${CONF}  path to build artifact (current configuration)
+#     CND_PACKAGE_DIR_${CONF}    directory of package (current configuration)
+#     CND_PACKAGE_NAME_${CONF}   name of package (current configuration)
+#     CND_PACKAGE_PATH_${CONF}   path to package (current configuration)
+#
+# NOCDDL
 
-#FOR LINUX
-LIBS := -I/opt/intel/mkl/include/intel64 -I/opt/intel/mkl/lib/intel64 
-LIBS_FRAMEWORK := /opt/intel/mkl/lib/intel64
-CXX := icpc
-CXXFLAGS := -std=c++14 -fopenmp -lmkl_rt -lpthread 
-# END LINUX
 
-#FOR MAC
-#LIBS := -framework Accelerate -I/opt/intel/mkl/include -I/opt/intel/mkl/lib -I/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include -I/Library/Developer/CommandLineTools/usr/include/c++/v1
-#LIBS_FRAMEWORK := /System/Library/Frameworks/Accelerate.framework/Versions/A/Frameworks/vecLib.framework
-#CXX := icpc
-#CXXFLAGS := -std=c++14 -fopenmp -lLAPACK
-# END MAC
-
-CFLAGS := -g
-APPName := kld1d
-
-all: clean main
-
-main: atomsParam.o main.o rhoMod.o sharedkld.o sphere_lebedev_rule.o
-	$(CXX) -o $(APPName) $(OBJECTS) -L$(LIBS_FRAMEWORK)  $(CXXFLAGS)
-	$(chmod +x $(APPName))
-atomsParam.o:
-	$(CXX) -c $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "atomsParam.o.d" -o atomsParam.o atomsParam.cpp
-main.o:
-	$(CXX) -c $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "main.o.d" -o main.o main.cpp
-rhoMod.o:
-	$(CXX) -c $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "rhoMod.o.d" -o rhoMod.o rhoMod.cpp
-sharedkld.o:
-	$(CXX) -c $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "sharedkld.o.d" -o sharedkld.o sharedkld.cpp
-sphere_lebedev_rule.o:
-	$(CXX) -c $(CFLAGS) $(LIBS) $(CXXFLAGS) -MMD -MP -MF "sphere_lebedev_rule.o.d" -o sphere_lebedev_rule.o sphere_lebedev_rule.cpp
+# Environment 
+MKDIR=mkdir
+CP=cp
+CCADMIN=CCadmin
 
 
-clean:
-	rm -rf *.o
-	rm -rf *.o.d
-	rm -rf $(APPName)
+# build
+build: .build-post
+
+.build-pre:
+# Add your pre 'build' code here...
+
+.build-post: .build-impl
+# Add your post 'build' code here...
+
+
+# clean
+clean: .clean-post
+
+.clean-pre:
+# Add your pre 'clean' code here...
+
+.clean-post: .clean-impl
+# Add your post 'clean' code here...
+
+
+# clobber
+clobber: .clobber-post
+
+.clobber-pre:
+# Add your pre 'clobber' code here...
+
+.clobber-post: .clobber-impl
+# Add your post 'clobber' code here...
+
+
+# all
+all: .all-post
+
+.all-pre:
+# Add your pre 'all' code here...
+
+.all-post: .all-impl
+# Add your post 'all' code here...
+
+
+# build tests
+build-tests: .build-tests-post
+
+.build-tests-pre:
+# Add your pre 'build-tests' code here...
+
+.build-tests-post: .build-tests-impl
+# Add your post 'build-tests' code here...
+
+
+# run tests
+test: .test-post
+
+.test-pre: build-tests
+# Add your pre 'test' code here...
+
+.test-post: .test-impl
+# Add your post 'test' code here...
+
+
+# help
+help: .help-post
+
+.help-pre:
+# Add your pre 'help' code here...
+
+.help-post: .help-impl
+# Add your post 'help' code here...
+
+
+
+# include project implementation makefile
+include nbproject/Makefile-impl.mk
+
+# include project make variables
+include nbproject/Makefile-variables.mk

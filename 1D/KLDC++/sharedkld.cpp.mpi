@@ -27,8 +27,14 @@ WFN INPUT SHOULD LOAD THE DATA OF CLASS WFN
 #include "atomsParam.h"
 #include "rhoMod.h"
 #include "/opt/intel/include/omp.h"
-
+#include <mpi.h>
 using namespace std;
+
+/**
+ *ROOT PROCESS
+ */
+const int root_process = 0;
+const int rootTag = 0;
 
 /**
  * # of WFN that will be process
@@ -554,7 +560,8 @@ double wv (int ia, double x, double y, double z){
 
 //variables for becke
 int rule_lebedev=7;
-double *totalInt, *partial_int;
+double *totalInt; 
+double *partial_int;
 int available_lebedev, order_lebedev, precision_lebedev;
 double  *x_lebedev,*y_lebedev,*z_lebedev,*w_lebedev;
 long double *x,*y,*z,*w_becke;
@@ -562,9 +569,9 @@ int npoints,kpoint;
 long double KLD = 0.0;
 
 double X1= 0.0, Y1= 0.0, Z1 = 0.0;
-
 double domeSigma = 4.5;
 double r12 = 0.0;
+
 const double rho_cut=0.001e0;
 /**
  * NUMERICAL INTEGRATION PROGRAM (MPI/OPENMP)
@@ -573,7 +580,6 @@ const double rho_cut=0.001e0;
 bool becke88 (){
 	bool calc = false;
 	KLD = 0.0;
-	
 	/* call to the subroutines that generate Lebedev grids for integration on a sphere.
 	!  the subroutines are included in the file SPHERE_LEBEDEV_RULE
 	!
@@ -665,21 +671,22 @@ bool becke88 (){
 	delete [] w_lebedev;
 	
 	//initializes the vector partial_int of data according to conditions below
+	int size = 0;
 	if (cubeXData[0]==0 && cubeYData[0]==0){
-		double size = cubeZData[0];
+		size = cubeZData[0];
 		partial_int = new double[size];
 		for (int i=0;i<cubeZData[0];i++){
 			partial_int[i]=0.0;
 		}
 	}else if (cubeXData[0]==0 && cubeZData[0]==0){
-		double size = cubeYData[0];
-		partial_int = new double[size];
+		size = cubeYData[0];
+		partial_int = new  double[size];
 		for (int i=0;i<cubeYData[0];i++){
 			partial_int[i]=0.0;
 	 	}
 	}else if (cubeYData[0]==0 && cubeZData[0]==0){
-		double size = cubeXData[0];
-		partial_int = new double[size];
+		size = cubeXData[0];
+		partial_int = new  double[size];
 		for (int i=0;i<cubeXData[0];i++){
 			partial_int[i]=0.0;
 		}
@@ -698,35 +705,87 @@ bool becke88 (){
 	/*
 	 * @TODO proceso paralelo de cálculo y distribuido
 	 */
+	int rank, commSize;
+
+	MPI_Init(NULL, NULL);
+	MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+	MPI_Comm_size(MPI_COMM_WORLD, &commSize);
+	MPI_Status status;
+	
+	if (rank == 0 ){
+		std::cout << "Process ID: " << rank << std::endl;
+        	std::cout << "MPI Nodes: " << commSize << std::endl;
+		std::cout << "The number of MPI tasks is: " << commSize << std::endl;
+		//initializes the vector total of data according to conditions below
+		int sizeT = 0.0;
+		if (cubeXData[0]==0 && cubeYData[0]==0){
+			sizeT = cubeZData[0];
+			totalInt = new  double[sizeT];
+			for (int i=0;i<cubeZData[0];i++){
+				totalInt[i]=0.0;
+			}
+		} 
+		if (cubeXData[0]==0 && cubeZData[0]==0){
+			sizeT = cubeYData[0];
+			totalInt = new  double[sizeT];
+			for (int i=0;i<cubeYData[0];i++){
+				totalInt[i]=0.0;
+			}
+		} 
+		if (cubeYData[0]==0 && cubeZData[0]==0){
+			sizeT = cubeXData[0];
+			totalInt = new  double[sizeT];
+			for (int i=0;i<cubeXData[0];i++){
+				totalInt[i]=0.0;
+			}
+		}
+	}
+
+	//  the integration information is sent from the root to all others process
+
+	MPI_Bcast(&npoints,1,MPI_INTEGER,root_process,MPI_COMM_WORLD);
+	MPI_Bcast(&x,npoints,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);
+	MPI_Bcast(&y,npoints,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);
+	MPI_Bcast(&z,npoints,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);
+	MPI_Bcast(&w_becke,npoints,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);
+
+	//the cube information is sent from the root to all others process
+
+	MPI_Bcast(&cubeXData[0],1,MPI_INTEGER,root_process,MPI_COMM_WORLD);//INX
+	MPI_Bcast(&cubeYData[0],1,MPI_INTEGER,root_process,MPI_COMM_WORLD);//INY
+	MPI_Bcast(&cubeZData[0],1,MPI_INTEGER,root_process,MPI_COMM_WORLD);//INZ
+	MPI_Bcast(&cubeX,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//XX0
+	MPI_Bcast(&cubeY,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//YY0
+	MPI_Bcast(&cubeZ,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//ZZ0
+	MPI_Bcast(&cubeXData[1],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IXA
+	MPI_Bcast(&cubeXData[2],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IXB
+	MPI_Bcast(&cubeXData[3],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IXC
+	MPI_Bcast(&cubeYData[1],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IYA
+	MPI_Bcast(&cubeYData[2],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IYB
+	MPI_Bcast(&cubeYData[3],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IYC
+	MPI_Bcast(&cubeZData[1],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IZA
+	MPI_Bcast(&cubeZData[2],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IZB
+	MPI_Bcast(&cubeZData[3],1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//IZC
+
+
+	// the WFN information is sent from the root to all others process
+
+	MPI_Bcast(&ocupNum,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//NMO
+	MPI_Bcast(&orbTypeData,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//NPO
+	MPI_Bcast(&nuclei,1,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//NAT
+	MPI_Bcast(&numberElectrons,1,MPI_INTEGER,root_process,MPI_COMM_WORLD);//NEL
+	MPI_Bcast(&ocupNum,ocupNum.size(),MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//NOCC
+	MPI_Bcast(&numberA,ocupNum.size(),MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//NA
+	MPI_Bcast(&nucleiData,nuclei,MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//XO,YO,ZO
+	MPI_Bcast(&nucCenterData,orbTypeData.size(),MPI_INTEGER,root_process,MPI_COMM_WORLD);//IX
+	MPI_Bcast(&orbTypeData,orbTypeData.size(),MPI_INTEGER,root_process,MPI_COMM_WORLD);//NX
+	MPI_Bcast(&orbExpData,orbTypeData.size(),MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//ALPHA
+	MPI_Bcast(&molOrbiData,orbTypeData.size()*ocupNum.size(),MPI_DOUBLE_PRECISION,root_process,MPI_COMM_WORLD);//C,NPO*NMO
+
+
 	int nThreads = 0;
 	const int factorN = 20;
 	int sysThreadLimit = 0;
-	
-	//initializes the vector total of data according to conditions below
-	
-	
-	if (cubeXData[0]==0 && cubeYData[0]==0){
-		double size = cubeZData[0];
-		totalInt = new  double[size];
-		for (int i=0;i<cubeZData[0];i++){
-			totalInt[i]=0.0;
-		}
-	}else if (cubeXData[0]==0 && cubeZData[0]==0){
-		double size = cubeYData[0];
-		totalInt = new  double[size];
-		for (int i=0;i<cubeYData[0];i++){
-			totalInt[i]=0.0;
-		}
-	}else if (cubeYData[0]==0 && cubeZData[0]==0){
-		double size = cubeXData[0];
-		totalInt = new  double[size];
-		for (int i=0;i<cubeXData[0];i++){
-			totalInt[i]=0.0;
-		}
-	}	
-	
-	
-	
 	#pragma omp parallel
 	{	
 		nThreads = omp_get_num_threads();
@@ -761,8 +820,7 @@ bool becke88 (){
 				Z1 = cubeZ + III*cubeZData[3];
 			}
 			r12 = sqrt (pow((x[IJK]-X1),2) + pow((y[IJK]-Y1),2) + pow((z[IJK]-Z1),2));
-			//excludes distant elements
-			if (r12 <= domeSigma){
+			if (r12 <= domeSigma){		
 				if (numberWFN == "1"){
 					KLD = KLD1_Func (x[IJK],y[IJK],z[IJK],
 					         X1,Y1,Z1,
@@ -773,15 +831,13 @@ bool becke88 (){
 						 molOrbiData,
 						 rho_cut
 						);
-				
-
+				}
 				//std::cout << "X1["<<IJK<<"]:" << x[IJK] << " Y1: " << y[IJK] << " Z1: "  << z[IJK] << " X2: " << X1 << " Y2: " << Y1 << " Z2: "  << Z1<<  " KLD: " << KLD << std::endl;
 
-				}
-			} else {
-				KLD = 0.0;
-			}
-			
+			}else{
+                                KLD = 0.0;
+                        }
+ 
 			
 			long double valuePI = partial_int[III];
 			long double w_beckeI = w_becke[IJK];
@@ -804,25 +860,43 @@ bool becke88 (){
 		
 
 	}
-	//write the results
-	ofstream resultsFileOS;
-	resultsFileOS.open (resultsFile);
-	for (int III =0;III<IN1;III++){
-		if (cubeXData[0]==0 && cubeYData[0] == 0){
-			X1 = cubeZ + III*cubeZData[3];
-		}
-		if (cubeXData[0]==0 && cubeZData[0] == 0){
-			X1 = cubeY + (III)*cubeYData[2];
-		}
-		if (cubeYData[0]==0 && cubeZData[0] == 0){
-			X1 = cubeX + (III)*cubeXData[1];
-		}
-		resultsFileOS << "   " << X1 << "        " <<  partial_int[III] << "\n";
-		
-		//std::cout << "partial_int.at(" << III << ")="<<partial_int.at(III)<<endl;
+
+	if (cubeXData[0]==0 && cubeYData[0] == 0){
+		MPI_Reduce(&partial_int,&totalInt,cubeZData[0],MPI_DOUBLE_PRECISION,MPI_SUM,root_process,MPI_COMM_WORLD);
 	}
-	resultsFileOS.close ();
+	if (cubeXData[0]==0 && cubeZData[0] == 0){
+		MPI_Reduce(&partial_int,&totalInt,cubeYData[0],MPI_DOUBLE_PRECISION,MPI_SUM,root_process,MPI_COMM_WORLD);
+	}
+	if (cubeYData[0]==0 && cubeZData[0] == 0){
+		MPI_Reduce(&partial_int,&totalInt,cubeXData[0],MPI_DOUBLE_PRECISION,MPI_SUM,root_process,MPI_COMM_WORLD);
+	}
+
+
+
+
+	//write results for process root
+	if (rank == 0){
 	
+		//write the results
+		ofstream resultsFileOS;
+		resultsFileOS.open (resultsFile);
+		for (int III =0;III<IN1;III++){
+			if (cubeXData[0]==0 && cubeYData[0] == 0){
+				X1 = cubeZ + III*cubeZData[3];
+			}
+			if (cubeXData[0]==0 && cubeZData[0] == 0){
+				X1 = cubeY + (III)*cubeYData[2];
+			}
+			if (cubeYData[0]==0 && cubeZData[0] == 0){
+				X1 = cubeX + (III)*cubeXData[1];
+			}
+			resultsFileOS << "   " << X1 << "        " <<  totalInt[III] << "\n";
+		
+		}
+		resultsFileOS.close ();
+	}
+	
+  	
 	
 	//releases reserved memory
 	delete [] x;
@@ -830,8 +904,10 @@ bool becke88 (){
 	delete [] z;
 	delete [] w_becke;
 	delete [] partial_int;
-	delete [] totalInt;
-	
+	delete [] totalInt;	
+
+
+	MPI_Finalize ();	
 	return calc;
 }
 
